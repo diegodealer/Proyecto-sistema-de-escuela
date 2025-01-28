@@ -1,0 +1,23 @@
+{
+  "name": "clase-de-fermin",
+  "version": "1.0.0",
+  "main": "jquery-3.7.1.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diegodealer/Proyecto-sistema-de-escuela.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/diegodealer/Proyecto-sistema-de-escuela/issues"
+  },
+  "homepage": "https://github.com/diegodealer/Proyecto-sistema-de-escuela#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

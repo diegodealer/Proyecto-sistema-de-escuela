@@ -1,20 +1,20 @@
 require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
-const cors = require("cors");
+
 
 const app = express();
 const PORT = process.env.PORT || 5500;
 
 app.use(express.json());
-app.use(cors()); // Permite peticiones desde el frontend
+
 
 // Configurar conexión a MySQL
 const db = mysql.createConnection({
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "",
-    database: process.env.DB_NAME || "escuela"
+    password: process.env.DB_PASS || "root",
+    database: process.env.DB_NAME || "gestion_maestros"
 });
 
 db.connect(err => {

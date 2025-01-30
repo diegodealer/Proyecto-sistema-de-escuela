@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 // Agregar un maestro (POST)
-app.post("/maestros", (req, res) => {
+app.post("/maestros", async (req, res) => {
     const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono, fechaIngreso } = req.body;
 
     if (!nombre || !apellidoPaterno || !correo || !telefono || !fechaIngreso) {
@@ -42,44 +42,46 @@ app.post("/maestros", (req, res) => {
     const sql = "INSERT INTO maestros (nombre, apellido_paterno, apellido_materno, correo, telefono, fecha_ingreso) VALUES (?, ?, ?, ?, ?, ?)";
     const valores = [nombre, apellidoPaterno, apellidoMaterno, correo, telefono, fechaIngreso];
 
-    db.query(sql, valores, (err, result) => {
-        if (err) {
-            console.error("Error al agregar maestro:", err);
-            return res.status(500).json({ mensaje: "Error en el servidor" });
-        }
+    try {
+        const [result] = await pool.promise().query(sql, valores);
         res.status(201).json({ id: result.insertId, ...req.body });
-    });
+    } catch (err) {
+        console.error("Error al agregar maestro:", err);
+        res.status(500).json({ mensaje: "Error en el servidor" });
+    }
 });
+
 
 // Obtener todos los maestros (GET)
-app.get("/maestros", (req, res) => {
-    const sql = "SELECT * FROM maestros";
-    db.query(sql, (err, result) => {
-        if (err) {
-            console.error("Error al obtener los maestros:", err);
-            res.status(500).json({ error: "Error en el servidor" });
-        } else {
-            res.json(result);
-        }
-    });
+app.get("/maestros", async (req, res) => {
+    try {
+        const [result] = await pool.promise().query("SELECT * FROM maestros");
+        res.json(result);
+    } catch (err) {
+        console.error("Error al obtener los maestros:", err);
+        res.status(500).json({ error: "Error en el servidor" });
+    }
 });
 
+
 // Eliminar un maestro (DELETE)
-app.delete("/maestros/:id", (req, res) => {
+app.delete("/maestros/:id", async (req, res) => {
     const { id } = req.params;
-    db.query("DELETE FROM maestros WHERE id = ?", [id], (err, result) => {
-        if (err) {
-            console.error("Error al eliminar maestro:", err);
-            return res.status(500).json({ mensaje: "Error en el servidor" });
-        }
+
+    try {
+        const [result] = await pool.promise().query("DELETE FROM maestros WHERE id = ?", [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ mensaje: "Maestro no encontrado" });
         }
 
         res.json({ mensaje: "Maestro eliminado correctamente" });
-    });
+    } catch (err) {
+        console.error("Error al eliminar maestro:", err);
+        res.status(500).json({ mensaje: "Error en el servidor" });
+    }
 });
+
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,

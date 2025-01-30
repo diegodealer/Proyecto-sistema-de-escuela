@@ -1,12 +1,6 @@
 $(document).ready(function () {
     alert("Bienvenido");
 
-    var MiApp = function () {
-        this.data = [];
-    };
-
-    var miApp = new MiApp();
-
     // Evento para agregar maestro
     $("#agregar").submit(function (event) {
         event.preventDefault();
@@ -57,7 +51,7 @@ $(document).ready(function () {
                 } else {
                     response.forEach(maestro => {
                         $("#listaMaestro").append(
-                            `<li>${maestro.nombre} ${maestro.apellidoPaterno} - ${maestro.correo}</li>`
+                            `<li>${maestro.nombre} ${maestro.apellido_paterno} ${maestro.correo} ${maestro.telefono}</li>`
                         );
                     });
                 }

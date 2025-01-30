@@ -5,7 +5,7 @@ $(document).ready(function () {
     $("#agregar").submit(function (event) {
         event.preventDefault();
 
-        // Simulando agregar maestro al array local
+        // Capturar datos del formulario
         const nombre = $("#nombre").val();
         const apellidoPaterno = $("#apellido_paterno").val();
         const apellidoMaterno = $("#apellido_materno").val();
@@ -13,24 +13,34 @@ $(document).ready(function () {
         const telefono = $("#telefono").val();
         const fechaIngreso = $("#fecha_ingreso").val();
 
-        // Validar campos simples
+        // Validar campos obligatorios
         if (!nombre || !apellidoPaterno || !correo || !telefono || !fechaIngreso) {
             alert("Todos los campos obligatorios deben ser completados.");
             return;
         }
 
-        // Agregar maestro a la lista
-        miApp.data.push({
-            nombre,
-            apellidoPaterno,
-            apellidoMaterno,
-            correo,
-            telefono,
-            fechaIngreso,
+        // Enviar datos al backend usando AJAX
+        $.ajax({
+            url: "/maestros", // Ruta del backend
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                nombre: nombre,
+                apellidoPaterno: apellidoPaterno,
+                apellidoMaterno: apellidoMaterno,
+                correo: correo,
+                telefono: telefono,
+                fechaIngreso: fechaIngreso,
+            }),
+            success: function (response) {
+                alert("Maestro agregado correctamente");
+                $("#agregar")[0].reset(); // Limpiar el formulario
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al agregar maestro:", error);
+                alert("Error al agregar maestro. Por favor, inténtalo de nuevo.");
+            },
         });
-
-        alert("Maestro agregado correctamente");
-        $("#agregar")[0].reset(); // Limpiar el formulario
     });
 
     // Evento para consultar maestros
@@ -39,17 +49,18 @@ $(document).ready(function () {
 
         $("#listaMaestro").empty(); // Limpiar resultados previos
 
+        // Obtener maestros desde el backend
         $.ajax({
-            url: '/maestros',
-            method: 'GET',
+            url: "/maestros",
+            method: "GET",
             dataType: "json",
-            success: function (response) {  // Corrige "succes" a "success"
+            success: function (response) {
                 console.log("Datos recibidos:", response);
 
                 if (response.length === 0) {
                     $("#listaMaestro").append("<li>No hay maestros registrados.</li>");
                 } else {
-                    response.forEach(maestro => {
+                    response.forEach((maestro) => {
                         $("#listaMaestro").append(
                             `<li>${maestro.nombre} ${maestro.apellido_paterno} ${maestro.correo} ${maestro.telefono}</li>`
                         );
@@ -59,7 +70,7 @@ $(document).ready(function () {
             error: function (xhr, status, error) {
                 console.error("Error al obtener maestros:", error);
                 $("#listaMaestro").append("<li>Error al cargar maestros.</li>");
-            }
+            },
         });
     });
 });

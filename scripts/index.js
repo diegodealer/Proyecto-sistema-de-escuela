@@ -1,6 +1,12 @@
 $(document).ready(function () {
     alert("Bienvenido");
 
+    var MiApp = function () {
+        this.data = [];
+    };
+
+    var miApp = new MiApp();
+
     // Evento para agregar maestro
     $("#agregar").submit(function (event) {
         event.preventDefault();
@@ -33,43 +39,33 @@ $(document).ready(function () {
         $("#agregar")[0].reset(); // Limpiar el formulario
     });
 
-    var MiApp = function () {
-        this.data = [];
-    };
-
-    var miApp = new MiApp();
-
     // Evento para consultar maestros
     $("#consult").submit(function (event) {
         event.preventDefault();
 
-        alert('hola')
-        // Limpiar contenedor previo
-        $("#resultado").empty();
+        $("#listaMaestro").empty(); // Limpiar resultados previos
 
-        if (miApp.data.length === 0) {
-            console.log( $("#resultado").append("<p>No hay maestros registrados.</p>")
-            );
-            return;
-        }
+        $.ajax({
+            url: '/maestros',
+            method: 'GET',
+            dataType: "json",
+            success: function (response) {  // Corrige "succes" a "success"
+                console.log("Datos recibidos:", response);
 
-        // Mostrar lista de maestros
-        miApp.data.forEach(function (maestro, index) {
-            console.log
-            {
-                $("#resultado").append(`
-                    <div class="maestro">
-                        <h3>Maestro ${index + 1}</h3>
-                        <p><strong>Nombre:</strong> ${maestro.nombre}</p>
-                        <p><strong>Apellido Paterno:</strong> ${maestro.apellidoPaterno}</p>
-                        <p><strong>Apellido Materno:</strong> ${maestro.apellidoMaterno || 'N/A'}</p>
-                        <p><strong>Correo:</strong> ${maestro.correo}</p>
-                        <p><strong>Teléfono:</strong> ${maestro.telefono}</p>
-                        <p><strong>Fecha de Ingreso:</strong> ${maestro.fechaIngreso}</p>
-                        <hr>
-                    </div>
-                ` 
-            )};
+                if (response.length === 0) {
+                    $("#listaMaestro").append("<li>No hay maestros registrados.</li>");
+                } else {
+                    response.forEach(maestro => {
+                        $("#listaMaestro").append(
+                            `<li>${maestro.nombre} ${maestro.apellidoPaterno} - ${maestro.correo}</li>`
+                        );
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al obtener maestros:", error);
+                $("#listaMaestro").append("<li>Error al cargar maestros.</li>");
+            }
         });
     });
 });

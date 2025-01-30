@@ -53,12 +53,14 @@ app.post("/maestros", (req, res) => {
 
 // Obtener todos los maestros (GET)
 app.get("/maestros", (req, res) => {
-    db.query("SELECT * FROM maestros", (err, results) => {
+    const sql = "SELECT * FROM maestros";
+    db.query(sql, (err, result) => {
         if (err) {
-            console.error("Error al obtener maestros:", err);
-            return res.status(500).json({ mensaje: "Error en el servidor" });
+            console.error("Error al obtener los maestros:", err);
+            res.status(500).json({ error: "Error en el servidor" });
+        } else {
+            res.json(result);
         }
-        res.json(results);
     });
 });
 
@@ -96,3 +98,6 @@ module.exports = pool.promise();
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
+

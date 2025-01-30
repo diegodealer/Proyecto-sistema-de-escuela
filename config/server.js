@@ -1,13 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
+const path = require('path');
 
 
 const app = express();
 const PORT = process.env.PORT || 5500;
 
 app.use(express.json());
-
+app.use(express.static(path.resolve('../')));
 
 // Configurar conexión a MySQL
 const db = mysql.createConnection({
@@ -27,7 +28,7 @@ db.connect(err => {
 
 // Ruta principal
 app.get("/", (req, res) => {
-    res.send("API funcionando <]Bv");
+    res.sendFile(path.resolve('..\\pages\\index.html') )
 });
 
 // Agregar un maestro (POST)

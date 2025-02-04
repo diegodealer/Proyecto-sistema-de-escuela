@@ -60,8 +60,23 @@ app.post("/maestros", async (req, res) => {
 
 // Obtener todos los maestros (GET)
 app.get("/maestros", async (req, res) => {
+    const { apellido } = req.query;  // Capturar el parámetro desde la URL
+
     try {
-        const [result] = await pool.promise().query("SELECT * FROM maestros");
+        let sql = "SELECT * FROM maestros";
+        let valores = [];
+
+        if (apellido) {
+            sql += " WHERE apellido_paterno = ?";
+            valores.push(apellido);
+        }
+
+        const [result] = await pool.promise().query(sql, valores);
+
+        if (result.length === 0) {
+            return res.status(404).json({ mensaje: "No se encontraron resultados" });
+        }
+
         res.json(result);
     } catch (err) {
         console.error("Error al obtener los maestros:", err);
